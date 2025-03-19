@@ -103,6 +103,13 @@ app.get("/posts", (req: Request, res: Response) => {
   res.json(filteredPosts);
 });
 
+app.get("/posts/:id", (req: Request, res: Response) => {
+  const id = req.params.id;
+  const post = posts.find((p: Post) => p.id === parseInt(id));
+
+  res.json({ post });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
