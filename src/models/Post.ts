@@ -1,13 +1,13 @@
 export class Post {
   id: number = 0;
-  title: string = "";
+  titel: string = "";
   content: string = "";
   author: string = "";
 
-  constructor(content: string) {
+  constructor(titel: string, content: string, author: string) {
     this.id = Math.round(Math.random() * 1000);
-    this.title = content;
+    this.titel = titel;
     this.content = content;
-    this.author = content;
+    this.author = author;
   }
 }
