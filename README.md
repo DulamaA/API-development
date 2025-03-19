@@ -10,4 +10,7 @@
 ![todos](https://github.com/user-attachments/assets/63d923cf-8b06-46a9-a656-f4426bc38f9a)
 
 3) Demonstration with query strings parameters to the "posts" endpoint by adding a filtering by author (search param) and sorting by title (sort=asc or sort=desc). 
-![query strings](https://github.com/user-attachments/assets/19b0cb0a-db99-469c-b879-e4c77dae3ef3)
+![query filter](https://github.com/user-attachments/assets/335ccb9e-85c0-4c03-9af5-757010898768)
+
+4) Created a new GET endpoint “/posts/:id” that returns a specific post depending on the “:id” path param from the URL.
+   ![path param](https://github.com/user-attachments/assets/6b98c39e-665f-4211-9b30-28de348a2c39)
