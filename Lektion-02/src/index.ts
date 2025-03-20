@@ -119,8 +119,9 @@ app.post("/todos", (req: Request, res: Response) => {
   const content = req.body.content;
 
   const newTodo = new Todo(content); // Content: "Släng soporna"
+  todos.push(newTodo);
 
-  res.json({ message: "Success from POST", data: newTodo });
+  res.json({ message: "Todo created" });
 });
 
 app.listen(PORT, () => {
