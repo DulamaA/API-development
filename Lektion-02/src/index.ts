@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import { Todo } from "./models/Todo";
-import { Post } from "./models/Post";
+import { Todo } from "../models/Todo";
+import { Post } from "../models/Post";
 const app = express();
 const PORT = 3000;
 
@@ -74,6 +74,7 @@ const posts: Post[] = [
   new Post("Post 4", "Vind", "Kalle"),
   new Post("Post 5", "Moln", "Erik"),
   new Post("Post 6", "Regnbåge", "Eva"),
+  new Post("Post 6", "Regnbåge", "Eva"),
 ];
 
 app.get("/posts", (req: Request, res: Response) => {
@@ -108,6 +109,18 @@ app.get("/posts/:id", (req: Request, res: Response) => {
   const post = posts.find((p: Post) => p.id === parseInt(id));
 
   res.json({ post });
+});
+
+//General Middleware for all requests
+app.use(express.json()); // This specific middleware parses JSON string to Javascript Object
+
+//Create todo
+app.post("/todos", (req: Request, res: Response) => {
+  const content = req.body.content;
+
+  const newTodo = new Todo(content); // Content: "Släng soporna"
+
+  res.json({ message: "Success from POST", data: newTodo });
 });
 
 app.listen(PORT, () => {
