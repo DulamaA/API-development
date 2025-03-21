@@ -149,6 +149,19 @@ app.patch("/todos/:id", (req: Request, res: Response) => {
   res.json({ message: "Todo updated", data: todo });
 });
 
+app.delete("/todos/:id", (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
+  if (todoIndex === -1) {
+    res.status(404).json({ error: "Todo not found" });
+    return;
+  }
+
+  todos.splice(todoIndex, 1);
+  res.json({ message: "Todo deleted" });
+});
+
 //Create post
 
 app.post("/posts", (req: Request, res: Response) => {
