@@ -25,8 +25,9 @@ const todos: Todo[] = [
 app.get("/todos", (req: Request, res: Response) => {
   const search = req.query.search;
   const sort = req.query.sort;
-
   let filteredTodos = todos;
+   
+  try {
 
   if (search) {
     filteredTodos = filteredTodos.filter((t) =>
@@ -57,6 +58,10 @@ app.get("/todos", (req: Request, res: Response) => {
   }
 
   res.json(filteredTodos);
+} catch (error: unknown) {
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  res.status(500).json({ error: message });
+}
 });
 
 // Example path params
