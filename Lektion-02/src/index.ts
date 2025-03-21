@@ -104,6 +104,7 @@ app.get("/posts", (req: Request, res: Response) => {
   res.json(filteredPosts);
 });
 
+//Hitta ID
 app.get("/posts/:id", (req: Request, res: Response) => {
   const id = req.params.id;
   const post = posts.find((p: Post) => p.id === parseInt(id));
@@ -117,13 +118,87 @@ app.use(express.json()); // This specific middleware parses JSON string to Javas
 //Create todo
 app.post("/todos", (req: Request, res: Response) => {
   const content = req.body.content;
+  if (content === undefined) {
+    res.status(400).json({ error: "Content is required" });
+    return;
+  }
 
   const newTodo = new Todo(content); // Content: "Släng soporna"
   todos.push(newTodo);
 
-  res.json({ message: "Todo created" });
+  res.status(201).json({ message: "Todo created" });
 });
 
+//Update todo
+app.patch("/todos/:id", (req: Request, res: Response) => {
+  const { content, done } = req.body; //Destructur JS object
+
+  if (content === undefined || done === undefined) {
+    res.status(400).json({ error: "Content and Done are required" });
+    return;
+  }
+
+  const todo = todos.find((t) => t.id === parseInt(req.params.id));
+  if (!todo) {
+    res.status(404).json({ error: "Todo not found" });
+    return;
+  }
+
+  todo.content = content;
+  todo.done = done;
+  res.json({ message: "Todo updated", data: todo });
+});
+
+//Create post
+
+app.post("/posts", (req: Request, res: Response) => {
+  const title = req.body.title;
+  const content = req.body.content;
+  const author = req.body.author;
+
+  const newPost = new Post(title, content, author);
+  posts.push(newPost);
+
+  res.status(201).json({ message: "Post created" });
+});
+
+//Update post by ID
+app.patch("/posts/:id", (req: Request, res: Response) => {
+  const { title, content, author } = req.body;
+
+  if (title === undefined && content === undefined && author === undefined) {
+    res.status(400).json({ error: "Title,content and author are required" });
+    return;
+  }
+
+  const post = posts.find((p: Post) => p.id === parseInt(req.params.id));
+  if (!post) {
+    res.status(404).json({ error: "Post not found" });
+    return;
+  }
+
+  post.title = title;
+  post.content = content;
+  post.author = author;
+  res.status(200).json({ message: "Post updated" });
+});
+
+//Delete post by ID
+app.delete("/posts/:id", (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const index = posts.findIndex((p) => p.id === parseInt(id));
+
+  if (index === -1) {
+    res.status(404).json({ error: "Post not found" });
+    return;
+  }
+
+  posts.splice(index, 1);
+  res.json({ message: "Post deleted" });
+});
+
+//Port 3000
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
