@@ -8,10 +8,10 @@ import {
 } from "../controller/postController";
 const router = express.Router();
 
-router.get("/posts", fetchAllPosts);
-router.get("/posts/:id", fetchPost);
-router.post("/posts", createPost);
-router.patch("/posts/:id", updatePost);
-router.delete("/posts/:id", deletePost);
+router.get("/", fetchAllPosts);
+router.get("/:id", fetchPost);
+router.post("/", createPost);
+router.patch("/:id", updatePost);
+router.delete("/:id", deletePost);
 
 export default router;

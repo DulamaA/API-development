@@ -8,10 +8,10 @@ import {
 } from "../controller/todoController";
 const router = express.Router();
 
-router.get("/todos", fetchAllTodos);
-router.get("/todos/:id", fetchTodo);
-router.post("/todos", createTodo);
-router.patch("/todos/:id", updateTodo);
-router.delete("/todos/:id", deleteTodo);
+router.get("/", fetchAllTodos);
+router.get("/:id", fetchTodo);
+router.post("/", createTodo);
+router.patch("/:id", updateTodo);
+router.delete("/:id", deleteTodo);
 
 export default router;
