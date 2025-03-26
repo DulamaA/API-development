@@ -27,7 +27,9 @@ function showPosts(posts) {
     div.innerHTML = `
       <h2>${post.title}</h2>
       <p><strong>Författare:</strong> ${post.author}</p>
-      <p>${post.content.slice(0, 100)}... <a href="#">Läs mer</a></p>
+      <p>${post.content.slice(0, 100)}... 
+         <a href="post.html?id=${post.id}">Läs mer</a>
+      </p>
     `;
     container.appendChild(div);
   });
