@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Inläggslista</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Alla Inlägg</h1>
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Sök efter titel, författare eller innehåll..."
+    />
+    <select id="sortSelect">
+      <option value="">Ingen sortering</option>
+      <option value="asc">Sortera A–Ö</option>
+      <option value="desc">Sortera Ö–A</option>
+    </select>
+    <button onclick="fetchPosts()">Sök</button>
+
+    <div id="postList"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

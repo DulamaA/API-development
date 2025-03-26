@@ -1,0 +1,13 @@
+body {
+  font-family: sans-serif;
+  background-color: white;
+  padding: 2rem;
+}
+
+.post {
+  background-color: rgb(171, 175, 172);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
