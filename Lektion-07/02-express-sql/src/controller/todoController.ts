@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Todo } from "../models/Todo";
 import { db } from "../config/db";
-import { RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { ITodo } from "../models/ITodo";
 
 //Simple data
@@ -65,9 +65,16 @@ export const fetchTodo = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
-    // Start working with MySQL through db-variable
-    const [rows] = await db.query<RowDataPacket[]>("SELECT * FROM todos WHERE id ");
-    //const [rows] = await db.query<ITodo[]>("SELECT * FROM todos");
+    const sql = `
+    SELECT * FROM todos
+     WHERE id = ?`;
+
+    const [rows] = await db.query<RowDataPacket[]>(sql, [id]);
+    const todo = rows[0];
+    if (!todo) {
+      res.status(404).json({ error: "Todo not found" });
+      return;
+    }
     res.json(rows[0]);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -75,47 +82,71 @@ export const fetchTodo = async (req: Request, res: Response) => {
   }
 };
 
-export const createTodo = (req: Request, res: Response) => {
+export const createTodo = async (req: Request, res: Response) => {
   const content = req.body.content;
   if (content === undefined) {
     res.status(400).json({ error: "Content is required" });
     return;
   }
 
-  const newTodo = new Todo(content); // Content: "Släng soporna"
-  todos.push(newTodo);
-
-  res.status(201).json({ message: "Todo created" });
+  try {
+    const sql = `
+    INSERT INTO todos (content)
+    VALUES (?)
+    `;
+    const [result, fields] = await db.query<ResultSetHeader>(sql, [content]);
+    res.status(201).json({ message: "Todo created", id: result.insertId });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+  }
 };
 
-export const updateTodo = (req: Request, res: Response) => {
-  const { content, done } = req.body; //Destructur JS object
+export const updateTodo = async (req: Request, res: Response) => {
+  const { content, done } = req.body;
+  const id = parseInt(req.params.id); // Parse the id from the request parameters
 
-  if (content === undefined || done === undefined) {
-    res.status(400).json({ error: "Content and Done are required" });
+  if (!Number.isInteger(id) || content == null || done == null) {
+    res.status(400).json({ error: "Valid id, content and done are required." });
     return;
   }
 
-  const todo = todos.find((t) => t.id === parseInt(req.params.id));
-  if (!todo) {
-    res.status(404).json({ error: "Todo not found" });
-    return;
-  }
+  try {
+    const sql = `
+      UPDATE todos
+      SET content = ?, done = ?
+      WHERE id = ?
+    `;
 
-  todo.content = content;
-  todo.done = done;
-  res.json({ message: "Todo updated", data: todo });
+    const [result] = await db.query<ResultSetHeader>(sql, [content, done, id]);
+
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Todo not found" });
+      return;
+    }
+    res.status(201).json({ message: "Todo updated", id });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+  }
 };
 
-export const deleteTodo = (req: Request, res: Response) => {
+export const deleteTodo = async (req: Request, res: Response) => {
   const id = req.params.id;
 
-  const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
-  if (todoIndex === -1) {
-    res.status(404).json({ error: "Todo not found" });
-    return;
-  }
+  try {
+    const sql = `
+    DELETE FROM todos
+    WHERE id = ? `;
 
-  todos.splice(todoIndex, 1);
-  res.json({ message: "Todo deleted" });
+    const [result] = await db.query<ResultSetHeader>(sql, [id]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Todo not found" });
+      return;
+    }
+    res.json({ message: "Todo deleted" });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.status(500).json({ error: message });
+  }
 };
