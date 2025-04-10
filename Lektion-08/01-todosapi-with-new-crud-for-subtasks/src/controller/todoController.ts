@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { ITodo } from "../models/ITodo";
+import { ITodoDBResponse } from "../models/ITodoDBResponse";
 
 export const fetchAllTodos = async (req: Request, res: Response) => {
   //const search = req.query.search;
@@ -38,31 +39,33 @@ FROM todos
 LEFT JOIN subtasks ON todos.id = subtasks.todo_id
 WHERE todos.id = ?`;
 
-    const [rows] = await db.query<RowDataPacket[]>(sql, [id]);
-    // const todo = rows[0];
-    // if (!todo) {
-    //   res.status(404).json({ error: "Todo not found" });
-    //   return;
-    // }
-    res.json(rows);
+    const [rows] = await db.query<ITodoDBResponse[]>(sql, [id]);
+    const todo = rows[0];
+    if (!todo) {
+      res.status(404).json({ error: "Todo not found" });
+      return;
+    }
+
+    res.json(formatTodo(rows));
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
   }
 };
 
-const formatTodo = (rows: any) => {
-  const formatedTodo = {
-    id: rows[0].todo_id,
-    content: rows[0].todo_content,
-    done: rows[0].todo_done,
-    created_at: rows[0].todo_created_at,
-    //   subtasks:   rows.map ((row) => ({
-    // }))
-  };
-
-  return formatedTodo;
-};
+const formatTodo = (rows: ITodoDBResponse[]) => ({
+  id: rows[0].todo_id,
+  content: rows[0].todo_content,
+  done: rows[0].todo_done,
+  created_at: rows[0].todo_created_at,
+  subtasks: rows.map((row) => ({
+    id: row.subtask_id,
+    todo_id: row.subtask_todo_id,
+    content: row.subtask_content,
+    done: row.subtask_done,
+    created_at: row.subtask_created_at,
+  })),
+});
 
 export const createTodo = async (req: Request, res: Response) => {
   const content = req.body.content;
