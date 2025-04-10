@@ -7,7 +7,7 @@ export const fetchAllSubtasks = async (req: Request, res: Response) => {
     // Start working with MySQL through db-variable
     const [rows] = await db.query<RowDataPacket[]>("SELECT * FROM subtasks");
     //const [rows] = await db.query<ISubtask[]>("SELECT * FROM subtasks");
-    res.json(rows[0]);
+    res.json(rows);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
@@ -61,7 +61,7 @@ export const createSubtask = async (req: Request, res: Response) => {
 
 export const updateSubtask = async (req: Request, res: Response) => {
   const { content, done, todo_id } = req.body;
-  const id = parseInt(req.params.id); // Parse the id from the request parameters
+  const id = parseInt(req.params.id);
 
   if (
     !Number.isInteger(id) ||
@@ -104,10 +104,10 @@ export const deleteSubtask = async (req: Request, res: Response) => {
   const id = req.params.id;
   const { todo_id } = req.body;
 
-  if (!todo_id) {
-    res.status(400).json({ error: "todo_id is required" });
-    return;
-  }
+  //   if (!todo_id) {
+  //     res.status(400).json({ error: "todo_id is required" });
+  //     return;
+  //   }
 
   try {
     const sql = `
@@ -115,10 +115,10 @@ export const deleteSubtask = async (req: Request, res: Response) => {
     WHERE id = ? AND todo_id = ?`;
 
     const [result] = await db.query<ResultSetHeader>(sql, [id, todo_id]);
-    if (result.affectedRows === 0) {
-      res.status(404).json({ error: "Subtask not found" });
-      return;
-    }
+    // if (result.affectedRows === 0) {
+    //   res.status(404).json({ error: "Subtask not found" });
+    //   return;
+    // }
     res.json({ message: "Subtask deleted" });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";

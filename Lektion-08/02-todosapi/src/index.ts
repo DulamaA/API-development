@@ -10,11 +10,10 @@ app.use(cors()); //This makes the Express server accept request from other domai
 // Routes
 import todoRouter from "./routes/todos";
 import postRouter from "./routes/posts";
+import subtaskRouter from "./routes/subtasks";
 
 app.use("/todos", todoRouter);
 app.use("/posts", postRouter);
-
-import subtaskRouter from "./routes/subtasks";
 app.use("/subtasks", subtaskRouter);
 
 //Connect to DB
