@@ -3,7 +3,6 @@ import { db } from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { ITodo } from "../models/ITodo";
 
-
 export const fetchAllTodos = async (req: Request, res: Response) => {
   //const search = req.query.search;
   //const sort = req.query.sort;
@@ -25,20 +24,44 @@ export const fetchTodo = async (req: Request, res: Response) => {
 
   try {
     const sql = `
-    SELECT * FROM todos
-     WHERE id = ?`;
+    SELECT 
+      todos.id AS todo_id,
+      todos.content AS todo_content,
+      todos.done AS todo_done,
+      todos.created_at AS todo_created_at,
+      subtasks.id AS subtask_id,
+      subtasks.todo_id AS subtask_todo_id,
+      subtasks.content AS subtask_content,
+      subtasks.done AS subtask_done,
+      subtasks.created_at AS subtask_created_at
+FROM todos
+LEFT JOIN subtasks ON todos.id = subtasks.todo_id
+WHERE todos.id = ?`;
 
     const [rows] = await db.query<RowDataPacket[]>(sql, [id]);
-    const todo = rows[0];
-    if (!todo) {
-      res.status(404).json({ error: "Todo not found" });
-      return;
-    }
-    res.json(rows[0]);
+    // const todo = rows[0];
+    // if (!todo) {
+    //   res.status(404).json({ error: "Todo not found" });
+    //   return;
+    // }
+    res.json(rows);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
   }
+};
+
+const formatTodo = (rows: any) => {
+  const formatedTodo = {
+    id: rows[0].todo_id,
+    content: rows[0].todo_content,
+    done: rows[0].todo_done,
+    created_at: rows[0].todo_created_at,
+    //   subtasks:   rows.map ((row) => ({
+    // }))
+  };
+
+  return formatedTodo;
 };
 
 export const createTodo = async (req: Request, res: Response) => {
