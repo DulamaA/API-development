@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
 import { db } from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { IPostDBResponse } from "../models/IPostDBResponse";
-import { IPost } from "../models/IPost";
 
-export const fetchAllPosts = async (req: Request, res: Response) => {
+export const fetchAllComments = async (req: Request, res: Response) => {
   const search = req.query.search?.toString() || "";
   const sort = req.query.sort?.toString().toLowerCase() || "";
 
@@ -31,59 +29,29 @@ export const fetchAllPosts = async (req: Request, res: Response) => {
   }
 };
 
-export const fetchPost = async (req: Request, res: Response) => {
+export const fetchComment = async (req: Request, res: Response) => {
   const id = req.params.id;
 
-  const sql = `
-    SELECT 
-      posts.id AS post_id,
-      posts.title AS post_title,
-      posts.content AS post_content,
-      posts.author AS post_author,
-      posts.created_at AS post_created_at,
-      comments.id AS comment_id,
-      comments.post_id AS comment_post_id,
-      comments.content AS comment_content,
-      comments.author AS comment_author,
-      comments.created_at AS comment_created_at
-    FROM posts
-    LEFT JOIN comments ON posts.id = comments.post_id
-    WHERE posts.id = ?
-  `;
-
   try {
-    const [rows] = await db.query<IPostDBResponse[]>(sql, [id]);
-    const post = rows[0];
-    if (!post) {
-      res.status(404).json({ error: "Post not found" });
+    const [rows] = await db.query<RowDataPacket[]>(
+      "SELECT * FROM posts WHERE id = ?",
+      [id]
+    );
+
+    const comment = rows[0];
+    if (!comment) {
+      res.status(404).json({ error: "Comment not found" });
       return;
     }
 
-    res.json(formatPost(rows));
+    res.json(comment);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
   }
 };
 
-const formatPost = (rows: IPostDBResponse[]) => ({
-  id: rows[0].post_id,
-  title: rows[0].post_title,
-  content: rows[0].post_content,
-  author: rows[0].post_author,
-  created_at: rows[0].post_created_at,
-  comments: rows
-    .filter((row) => row.comment_id != null)
-    .map((row) => ({
-      id: row.comment_id,
-      post_id: row.comment_post_id,
-      content: row.comment_content,
-      author: row.comment_author,
-      created_at: row.comment_created_at,
-    })),
-});
-
-export const createPost = async (req: Request, res: Response) => {
+export const createComment = async (req: Request, res: Response) => {
   const { title, content, author } = req.body;
 
   if (!title || !content || !author) {
@@ -97,14 +65,14 @@ export const createPost = async (req: Request, res: Response) => {
       [title, content, author]
     );
 
-    res.status(201).json({ message: "Post created", id: result.insertId });
+    res.status(201).json({ message: "Comment created", id: result.insertId });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
   }
 };
 
-export const updatePost = async (req: Request, res: Response) => {
+export const updateComment = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   const { title, content, author } = req.body;
 
@@ -122,18 +90,18 @@ export const updatePost = async (req: Request, res: Response) => {
     );
 
     if (result.affectedRows === 0) {
-      res.status(404).json({ error: "Post not found" });
+      res.status(404).json({ error: "Comment not found" });
       return;
     }
 
-    res.status(200).json({ message: "Post updated", id });
+    res.status(200).json({ message: "Comment updated", id });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
   }
 };
 
-export const deletePost = async (req: Request, res: Response) => {
+export const deleteComment = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
@@ -143,11 +111,11 @@ export const deletePost = async (req: Request, res: Response) => {
     );
 
     if (result.affectedRows === 0) {
-      res.status(404).json({ error: "Post not found" });
+      res.status(404).json({ error: "Comment not found" });
       return;
     }
 
-    res.status(200).json({ message: "Post deleted" });
+    res.status(200).json({ message: "Comment deleted" });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
