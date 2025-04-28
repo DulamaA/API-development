@@ -1,0 +1,28 @@
+#posts,
+#post {
+  margin-top: 20px;
+}
+
+#posts div,
+#post div {
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.author {
+  display: block;
+  color: #999;
+}
+
+.done {
+  text-decoration: line-through;
+}
+
+#comments {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px dotted #aaa;
+  border-radius: 5px;
+}
