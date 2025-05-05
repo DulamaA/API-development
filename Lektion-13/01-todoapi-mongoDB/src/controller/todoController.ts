@@ -52,31 +52,25 @@ export const createTodo = async (req: Request, res: Response) => {
 
 export const updateTodo = async (req: Request, res: Response) => {
   const { content, done } = req.body;
-  const id = parseInt(req.params.id); // Parse the id from the request parameters
-
-  if (!Number.isInteger(id) || content == null || done == null) {
-    res.status(400).json({ error: "Valid id, content and done are required." });
-    return;
-  }
 
   try {
-    //  {
-    //   res.status(404).json({ error: "Todo not found" });
-    //   return;
-    // }
-    // res.status(201).json({ message: "Todo updated", id });
-    const updated = await Todo.findByIdAndUpdate(
-      id,
-      { content, done },
-      { new: true, runValidators: true }
+    const updatedTodo = await Todo.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          content: content,
+          done: done,
+        },
+      }
     );
 
-    if (!updated) {
-      res.status(404).json({ error: "Todo not found" });
-      return;
+    if (updatedTodo.matchedCount == 0) {
+      res.status(404).json({ success: false, message: "Todo not found" });
+      res.json({
+        message: "Todo created",
+        data: await Todo.findById(req.params.id),
+      });
     }
-
-    res.status(200).json(updated);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: message });
@@ -84,14 +78,10 @@ export const updateTodo = async (req: Request, res: Response) => {
 };
 
 export const deleteTodo = async (req: Request, res: Response) => {
-  const id = req.params.id;
-
   try {
-    const deleted = await Todo.findByIdAndDelete(id);
-    if (!deleted) {
-      //  {
-      res.status(404).json({ error: "Todo not found" });
-      return;
+    const deletedTodo = await Todo.deleteOne({ _id: req.params.id });
+    if (deletedTodo.deletedCount === 0) {
+      res.status(404).json({ success: false, message: "Todo not found" });
     }
     res.json({ message: "Todo deleted" });
   } catch (error: unknown) {
