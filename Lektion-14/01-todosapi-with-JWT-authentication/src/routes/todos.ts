@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import {
   createTodo,
   deleteTodo,
@@ -6,12 +6,15 @@ import {
   fetchTodo,
   updateTodo,
 } from "../controller/todoController";
+import { verifyAccessToken } from "../middleware/verifyToken";
 const router = express.Router();
 
 router.get("/", fetchAllTodos);
 router.get("/:id", fetchTodo);
-router.post("/", createTodo);
-router.patch("/:id", updateTodo);
-router.delete("/:id", deleteTodo);
+
+//The 3 endpoints below are protected by the verifyAccessToken middleware
+router.post("/", verifyAccessToken, createTodo);
+router.patch("/:id", verifyAccessToken, updateTodo);
+router.delete("/:id", verifyAccessToken, deleteTodo);
 
 export default router;
