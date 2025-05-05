@@ -1,7 +1,7 @@
 import "dotenv/config"; // Load environment variables from .env file
 import express from "express";
 import cors from "cors";
-import { connectToDatabase } from "./config/db";
+import mongoose from "mongoose";
 const app = express();
 
 // Middleware
@@ -15,8 +15,8 @@ app.use("/todos", todoRouter);
 app.use("/posts", postRouter);
 
 //Connect to DB
+mongoose.connect(process.env.MONGODB_URL || "");
 
-connectToDatabase();
 //Start the express server
 const PORT = 3000;
 app.listen(PORT, () => {

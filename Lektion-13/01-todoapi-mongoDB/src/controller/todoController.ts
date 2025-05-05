@@ -1,54 +1,15 @@
 import { Request, Response } from "express";
-import { Todo } from "../models/Todo";
+import { Todo } from "../types/Todo";
 import { db } from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { ITodo } from "../models/ITodo";
+import { ITodo } from "../types/ITodo";
 
 //Simple data
-
-const todos: Todo[] = [
-  new Todo("AAA"),
-  new Todo("BBB"),
-  new Todo("CCC"),
-  new Todo("Handla mat"),
-  new Todo("Käka mat"),
-  new Todo("Diska"),
-  new Todo("Diska"),
-];
 
 export const fetchAllTodos = async (req: Request, res: Response) => {
   //const search = req.query.search;
   //const sort = req.query.sort;
   //let filteredTodos = todos;
-
-  //try {
-  // if (search) {
-  //   filteredTodos = filteredTodos.filter((t) =>
-  //     t.content.includes(search.toString())
-  //   );
-  // }
-
-  // if (sort && sort === "asc") {
-  //   filteredTodos = filteredTodos.sort((a, b) => {
-  //     const todo1 = a.content.toLowerCase();
-  //     const todo2 = b.content.toLowerCase();
-
-  //     if (todo1 > todo2) return 1;
-  //     if (todo1 < todo2) return -1;
-  //     return 0;
-  //   });
-  // }
-
-  // if (sort && sort === "desc") {
-  //   filteredTodos = filteredTodos.sort((a, b) => {
-  //     const todo1 = a.content.toLowerCase();
-  //     const todo2 = b.content.toLowerCase();
-
-  //     if (todo1 < todo2) return 1;
-  //     if (todo1 > todo2) return -1;
-  //     return 0;
-  //   });
-  //}
 
   try {
     // Start working with MySQL through db-variable

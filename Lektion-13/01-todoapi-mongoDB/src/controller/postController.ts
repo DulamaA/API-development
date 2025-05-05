@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Post } from "../models/Post";
+import { Post } from "../types/Post";
 import { db } from "../config/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { IPost } from "../models/IPost";
+import { IPost } from "../types/IPost";
 
 export const fetchAllPosts = async (req: Request, res: Response) => {
   const search = req.query.search?.toString() || "";

@@ -1,13 +1,8 @@
-export class Todo {
-  id: number = 0;
-  content: string = "";
-  done: boolean = false;
-  date: string = "";
+import mongoose from "mongoose";
+const Schema = mongoose.Schema;
 
-  constructor(content: string) {
-    this.id = Math.round(Math.random() * 1000);
-    this.content = content;
-    this.done = false;
-    this.date = new Date().toString();
-  }
-}
+const TodoSchema = new Schema({
+  content: String,
+  done: Boolean,
+  created_at: Date,
+});
