@@ -8,8 +8,12 @@ const app = express();
 // Middleware
 app.use(express.json()); // This specific middleware parses JSON string to Javascript Object
 app.use(cookieParser()); // This middleware parses cookies from the request
-app.use(cors()); //This makes the Express server accept request from other domain
-
+app.use(
+  cors({
+    origin: "*", //This makes the Express server accept request from other domain
+    credentials: true, //Allows cookies sent to this API
+  })
+);
 
 // Routes
 import todoRouter from "./routes/todos";
