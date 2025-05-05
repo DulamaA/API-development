@@ -12,6 +12,8 @@ const TodoSchema = new Schema({
   },
   created_at: {
     type: Date,
-    required: true,
+    default: Date.now,
   },
 });
+
+export default mongoose.model("Todos", TodoSchema);
